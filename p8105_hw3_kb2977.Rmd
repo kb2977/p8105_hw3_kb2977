@@ -87,7 +87,6 @@ table_data =
 * Below is a five-panel plot that shows, for each response category separately, the distribution of state-level averages over time.
 
 ```{r plot}
-devtools::install_github("thomasp85/patchwork")
 library(patchwork)
 library(ggridges)
 
@@ -128,19 +127,13 @@ library(forcats)
 Directions: Write a short description of the dataset, noting the size and structure of the data, describing some key variables, and giving illustrative examples of observations. 
 
 * The following variables were included in this dataset: `r ls(instacart)`.
+* The dataset consists of `r nrow(instacart)` rows (observations) and `r ncol(instacart)` columns (variables).
+* The dataset included useful information about the customer, the order, and the products of interest.  
 * There were `r count(distinct(instacart, order_id))` orders placed.
-* The dataset consists of `r nrow(instacart)` rows and `r ncol(instacart)` columns.
-* The average number of items ordered in this dataset is
-```{r}
-instacart %>% 
-  group_by(order_id) %>% 
-  count(order_id) %>% 
-  summarize(ave_item = mean(n))
-```
+* The average number of items ordered in this dataset was `r instacart %>% count(order_id) %>% summarize(ave_num_item = mean(n))`.
 * The user_id with the most orders was `r names(which.max(table(instacart$user_id)))`.
 * The item that was the most ordered was `r names(which.max(table(instacart$product_name)))`.
-* The item that was the most reordered was `r instacart %>% group_by(product_name) %>%  names(which.max(table(instacart$product_name)))`.
-* Customers tend to order on ___ day at around ___ time.
+* Customers tend to place orders around `names(which.max(table(instacart$product_name)))` hour of the day.
 
 ###Part 2: Answering questions using instacart_data
 
@@ -204,22 +197,77 @@ data(ny_noaa)
 
 Directions: Write a short description of the dataset, noting the size and structure of the data, describing some key variables, and indicating the extent to which missing data is an issue. 
 
-*
+* The following variables were included in this dataset: `r ls(ny_noaa)`.
+* The dataset consists of `r nrow(ny_noaa)` rows (observations) and `r ncol(ny_noaa)` columns (variables).
+* The dataset included useful information about the weather station, date, temperature, precipitation, and snowfall.
+* There were `r count(distinct(ny_noaa, date))` dates in which weather was observed.
+* Weather information was gathered from `r count(distinct(ny_noaa, id))` distinct stations.
 
 ###Part 2: Answering questions using ny_noaa datset
 
 * Create separate variables for year, month, and day. Ensure observations for temperature, precipitation, and snowfall are given in reasonable units.
 
-```{r}
-ny_noaa_data = 
+```{r ny_noaa_clean}
+ny_noaa_clean = 
   ny_noaa %>% 
   janitor::clean_names() %>% 
   separate(date, into = c("year", "month", "day"), sep = "-") %>% 
-  mutate(prcp = as.numeric(prcp)/10)
+  mutate(prcp = as.numeric(prcp)/10,
+         tmax = as.numeric(tmax)/10,
+         tmin = as.numeric(tmin)/10
+         )
 ```
 
-For snowfall, the most commonly observed value was `r names(which.max(table(ny_noaa_data$snow)))`. This is because most days of the year, it does not snow.
+For snowfall, the most commonly observed value was `r names(which.max(table(ny_noaa_clean$snow)))`. This is because most days of the year, it does not snow.
 
-* Make a two-panel plot showing the average temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+* Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
+
+```{r ave_temp}
+ave_temp = 
+  ny_noaa_clean %>% 
+  filter(month == "01" | month == "07") %>% 
+  group_by(month, id, year) %>% 
+  summarize(ave_max_temp = mean(tmax)) %>% 
+  ggplot(aes(x = id, y = ave_max_temp)) +
+  geom_hex() +
+  facet_grid(~month) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 7)) +
+  labs(
+      title = "Average Maximum Temperature in January and July",
+      x = "Time in Years",
+      y = "Average Maximum Temperature (Celcius)",
+      caption = "Data from the ny_noaa package"
+  ) 
+ave_temp
+```
 
 * Make a two-panel plot showing (i) tmax vs tmin for the full dataset (note that a scatterplot may not be the best option); and (ii) make a plot showing the distribution of snowfall values greater than 0 and less than 100 separately by year.
+
+```{r two_plots}
+devtools::install_github("thomasp85/patchwork")
+temp_plot = 
+  ny_noaa_clean %>% 
+  ggplot(aes(x = tmax, y = tmin)) +
+  geom_smooth() +
+  labs(
+      title = "Plot of Maximum vs. Minimum Temperature",
+      x = "Maximum Temperature in Celcius",
+      y = "Minimum Temperature in Celcius",
+      caption = "Data from the ny_noaa package"
+  ) 
+
+snowfall_plot = 
+  ny_noaa_clean %>% 
+  filter(snow < 100 & snow > 0) %>% 
+  ggplot(aes(x = snow, y = year)) +
+  geom_density_ridges(alpha = .5, color = "blue") +
+  labs(
+      title = "Distribution of Snowfall by Year",
+      x = "Snowfall (mm)",
+      y = "Time in Years",
+      caption = "Data from the ny_noaa package"
+  ) 
+
+temp_plot + snowfall_plot
+```
+
