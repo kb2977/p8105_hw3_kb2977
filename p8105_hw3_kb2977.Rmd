@@ -62,7 +62,7 @@ state_plot = brfss_data %>%
     geom_line() +
     labs(
         title = "Observations in Each State",
-        x = "Time in years",
+        x = "Time in Years",
         y = "Number of Observations",
         caption = "Data from the brfss package"
     ) +
@@ -132,8 +132,8 @@ Directions: Write a short description of the dataset, noting the size and struct
 * There were `r count(distinct(instacart, order_id))` orders placed.
 * The average number of items ordered in this dataset was `r instacart %>% count(order_id) %>% summarize(ave_num_item = mean(n))`.
 * The user_id with the most orders was `r names(which.max(table(instacart$user_id)))`.
-* The item that was the most ordered was `r names(which.max(table(instacart$product_name)))`.
-* Customers tend to place orders around `names(which.max(table(instacart$product_name)))` hour of the day.
+* The most ordered item was `r names(which.max(table(instacart$product_name)))`.
+* Customers tend to place orders around the `r names(which.max(table(instacart$order_hour_of_day)))` hour of the day.
 
 ###Part 2: Answering questions using instacart_data
 
@@ -202,6 +202,7 @@ Directions: Write a short description of the dataset, noting the size and struct
 * The dataset included useful information about the weather station, date, temperature, precipitation, and snowfall.
 * There were `r count(distinct(ny_noaa, date))` dates in which weather was observed.
 * Weather information was gathered from `r count(distinct(ny_noaa, id))` distinct stations.
+* MISSING DATA
 
 ###Part 2: Answering questions using ny_noaa datset
 
@@ -229,7 +230,7 @@ ave_temp =
   group_by(month, id, year) %>% 
   summarize(ave_max_temp = mean(tmax)) %>% 
   ggplot(aes(x = id, y = ave_max_temp)) +
-  geom_hex() +
+  geom_point() +
   facet_grid(~month) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 7)) +
   labs(
@@ -260,7 +261,7 @@ snowfall_plot =
   ny_noaa_clean %>% 
   filter(snow < 100 & snow > 0) %>% 
   ggplot(aes(x = snow, y = year)) +
-  geom_density_ridges(alpha = .5, color = "blue") +
+  geom_density_ridges(alpha = .5, color = "blue", scale = 0.85) +
   labs(
       title = "Distribution of Snowfall by Year",
       x = "Snowfall (mm)",
@@ -270,4 +271,3 @@ snowfall_plot =
 
 temp_plot + snowfall_plot
 ```
-
