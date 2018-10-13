@@ -233,7 +233,7 @@ ave_temp =
   ggplot(aes(x = year, y = ave_max_temp)) +
   geom_hex() +
   facet_grid(~month) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 7)) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 9)) +
   labs(
       title = "Average Maximum Temperature in January and July",
       x = "Time in Years",
