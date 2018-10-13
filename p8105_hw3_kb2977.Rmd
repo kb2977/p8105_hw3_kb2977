@@ -119,7 +119,6 @@ av_prop_plot
 
 ```{r instacart_data}
 data(instacart)
-library(forcats)
 ```
 
 ###Part 1: Exploration of instacart dataset
@@ -155,7 +154,7 @@ items_ordered =
   labs(
       title = "Plot of Items Ordered in Each Aisle",
       x = "Aisle Name",
-      y = "Number of items",
+      y = "Number of Items",
       caption = "Data from the instacart package"
   )
 items_ordered
@@ -224,13 +223,15 @@ For snowfall, the most commonly observed value was `r names(which.max(table(ny_n
 * Make a two-panel plot showing the average max temperature in January and in July in each station across years. Is there any observable / interpretable structure? Any outliers?
 
 ```{r ave_temp}
+
 ave_temp = 
   ny_noaa_clean %>% 
   filter(month == "01" | month == "07") %>% 
+  mutate(month = recode(month, "01" = "January", "07" = "July")) %>% 
   group_by(month, id, year) %>% 
   summarize(ave_max_temp = mean(tmax)) %>% 
-  ggplot(aes(x = id, y = ave_max_temp)) +
-  geom_point() +
+  ggplot(aes(x = year, y = ave_max_temp)) +
+  geom_hex() +
   facet_grid(~month) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 7)) +
   labs(
@@ -249,7 +250,7 @@ devtools::install_github("thomasp85/patchwork")
 temp_plot = 
   ny_noaa_clean %>% 
   ggplot(aes(x = tmax, y = tmin)) +
-  geom_smooth() +
+  geom_hex() +
   labs(
       title = "Plot of Maximum vs. Minimum Temperature",
       x = "Maximum Temperature in Celcius",
