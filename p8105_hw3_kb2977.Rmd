@@ -67,7 +67,8 @@ state_plot = brfss_data %>%
         caption = "Data from the brfss package"
     ) +
     scale_color_hue(name = "States") +
-    theme(legend.position = "bottom")
+    theme(legend.box = "horizontal")
+
 state_plot
 ```
 
