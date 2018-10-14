@@ -82,6 +82,8 @@ table_data =
   summarize(mean_ex = mean(data_value),
             sd_ex = sd(data_value)) %>%
   knitr::kable(digits = 1)
+
+table_data
 ```
 
 * Below is a five-panel plot that shows, for each response category separately, the distribution of state-level averages over time.
@@ -142,8 +144,9 @@ Directions: Write a short description of the dataset, noting the size and struct
 `r instacart %>% count(aisle) %>% top_n(5) %>% knitr::kable(digits = 1)`
 
 * Below is a plot that shows the number of items ordered in each aisle. Order aisles sensibly, and organize your plot so others can read it.
-mutate(aisle_id = forcats::fct_reorder(aisle_id, desc(n)))
-```{r}
+
+```{r items_ordered}
+
 items_ordered = 
   instacart %>% 
   count(aisle) %>%
@@ -151,6 +154,7 @@ items_ordered =
   ggplot(aes(x = aisle, y = n)) +
   geom_bar(stat = "identity") +
   theme(axis.text.x = element_text(angle = 45, hjust = 1), text = element_text(size = 7)) +
+      scale_x_discrete(breaks = c("fresh vegetables", "frozen produce", "paper goods", "missing", "granola", "bakery desserts", "more household", "beauty")) +
   labs(
       title = "Plot of Items Ordered in Each Aisle",
       x = "Aisle Name",
