@@ -66,8 +66,7 @@ state_plot = brfss_data %>%
         y = "Number of Observations",
         caption = "Data from the brfss package"
     ) +
-    scale_color_hue(name = "States") +
-    theme(legend.box = "horizontal")
+    scale_color_hue(name = "States")
 
 state_plot
 ```
@@ -181,7 +180,7 @@ pop_item
 
 * Below is a table showing the mean hour of the day at which Pink Lady Apples and Coffee Ice Cream are ordered on each day of the week; format this table for human readers (i.e. produce a 2 x 7 table).
 
-```{r}
+```{r mean_hour_table}
 mean_hour_table = 
   instacart %>% 
   filter(product_name == "Pink Lady Apples" | product_name == "Coffee Ice Cream") %>%
